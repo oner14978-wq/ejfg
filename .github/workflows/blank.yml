@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows 10 - Máquina Virtual</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px #0002;
+    }
+
+    h1 {
+      color: #2563eb;
+      text-align: center;
+    }
+
+    h2 {
+      color: #334155;
+      margin-top: 25px;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .aviso {
+      background: #fef3c7;
+      padding: 12px;
+      border-left: 4px solid #f59e0b;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <h1>Windows 10 - Máquina Virtual</h1>
+
+    <p>
+      Este painel apresenta os comandos para executar o Windows 10
+      usando Docker e Docker Compose.
+    </p>
+
+    <div class="aviso">
+      <strong>Importante:</strong>
+      esta página HTML não inicia o Windows sozinha.
+      É necessário configurar e executar o Docker no computador.
+    </div>
+
+    <h2>1. Configuração do Docker Compose</h2>
+
+    <p>
+      Salve o código abaixo em um arquivo chamado
+      <strong>compose.yml</strong>.
+    </p>
+
+    <pre id="compose">services:
+  windows:
+    image: dockurr/windows
+    container_name: windows
+    environment:
+      VERSION: "10"
+      USERNAME: ${WINDOWS_USERNAME}
+      PASSWORD: ${WINDOWS_PASSWORD}
+      RAM_SIZE: "16G"
+      CPU_CORES: "4"
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8006:8006"
+      - "3389:3389/tcp"
+    volumes:
+      - windows-data:/storage
+    devices:
+      - "/dev/kvm:/dev/kvm"
+      - "/dev/net/tun:/dev/net/tun"
+    stop_grace_period: 2m
+    restart: unless-stopped
+
+volumes:
+  windows-data:</pre>
+
+    <button onclick="copiar('compose')">
+      Copiar configuração
+    </button>
+
+    <h2>2. Configuração de usuário e senha</h2>
+
+    <p>
+      Crie um arquivo chamado <strong>.env</strong>
+      na mesma pasta do compose.yml.
+    </p>
+
+    <pre id="env">WINDOWS_USERNAME=usuario
+WINDOWS_PASSWORD=TroquePorUmaSenhaForte123!</pre>
+
+    <button onclick="copiar('env')">
+      Copiar credenciais
+    </button>
+
+    <h2>3. Iniciar a máquina virtual</h2>
+
+    <p>
+      Abra o terminal na pasta onde salvou os arquivos
+      e execute os comandos:
+    </p>
+
+    <pre id="comandos">docker compose up -d
+docker compose logs -f</pre>
+
+    <button onclick="copiar('comandos')">
+      Copiar comandos
+    </button>
+
+    <h2>4. Acessar o Windows</h2>
+
+    <p>
+      Após a inicialização, abra a interface web:
+    </p>
+
+    <p>
+      <a href="http://localhost:8006" target="_blank">
+        http://localhost:8006
+      </a>
+    </p>
+
+    <p>
+      Para usar a Área de Trabalho Remota (RDP),
+      conecte-se ao endereço localhost:3389.
+    </p>
+
+    <h2>5. Parar a máquina virtual</h2>
+
+    <pre id="parar">docker compose down</pre>
+
+    <button onclick="copiar('parar')">
+      Copiar comando
+    </button>
+
+    <h2>Requisitos</h2>
+
+    <ul>
+      <li>Docker instalado e funcionando.</li>
+      <li>Docker Compose v2.</li>
+      <li>Virtualização habilitada e compatível com o ambiente.</li>
+      <li>Recursos suficientes para 16 GB de RAM e 4 CPUs.</li>
+    </ul>
+
+  </div>
+
+  <script>
+    function copiar(id) {
+      const texto = document.getElementById(id).innerText;
+
+      navigator.clipboard.writeText(texto)
+        .then(() => alert("Código copiado!"))
+        .catch(() => {
+          alert("Não foi possível copiar automaticamente. Selecione e copie o texto manualmente.");
+        });
+    }
+  </script>
+</body>
+</html>
